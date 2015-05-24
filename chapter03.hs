@@ -31,12 +31,27 @@ tribonacci = loop 0 0 1 where loop a b c = a : loop b c (a + b + c)
 --
 type Tuple = (Int, Int)
 
+
+checkSign :: Tuple -> Tuple
+checkSign (a, b)
+  | b < 0     = (negate a, negate b)
+  | otherwise = (a, b)
+
+reduce :: Tuple -> Tuple
+reduce (a, b) = (div a d, div b d) where d = gcd a b
+
 qadd :: Tuple -> Tuple -> Tuple
 qadd (a, b) (c, d) = if b * d == 0
                      then error "second of tuple number is 0"
-                     else (a * d + b * c, b * d)
+                     else (checkSign . reduce) (a * d + b * c, b * d)
 
 qequal :: Tuple -> Tuple -> Bool
 qequal (a, b) (c, d) = if b * d == 0
                        then error "second of tuple number is 0"
                        else a * d == b * c
+
+qlist :: Tuple -> [Tuple]
+qlist (a, b) = if b == 0
+               then error "second of tuple number is 0"
+               else [(a' * x * y, b' * x * y) | x <- [1..], y <- [1, -1]]
+  where (a', b') = (checkSign . reduce) (a, b)
